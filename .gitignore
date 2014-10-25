@@ -1,0 +1,23 @@
+# Gradle
+.gradle
+build
+
+# Finder
+.DS_Store
+
+# IntelliJ.
+*.iml
+.idea
+out
+
+# Eclipse.
+.project
+.classpath
+.settings
+.cache
+bin
+
+target
+
+# Local/non-default configuration
+application.conf

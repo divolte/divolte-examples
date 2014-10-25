@@ -1,0 +1,20 @@
+divolte {
+  kafka_flusher {
+    enabled = true
+    threads = 1
+  }
+
+  hdfs_flusher {
+    enabled = false
+  }
+  
+  javascript {
+    logging = true
+    debug = true
+  }
+
+  tracking {
+    schema_file = /path/to/divolte-examples/avro-schema/src/main/resources/JavadocEventRecord.avsc
+    schema_mapping = /path/to/divolte-examples/avro-schema/mapping.conf
+  }
+}

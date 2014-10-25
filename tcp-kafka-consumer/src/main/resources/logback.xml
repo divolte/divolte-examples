@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <target>System.out</target>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSSX} [%thread] %-6level[%logger{0}]: %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="io.divolte.example" level="debug" />
+
+  <!-- Keep Kafka and ZooKeeper quiet -->
+  <logger name="kafka" level="warn" additivity="false" />
+  <logger name="org.apache.zookeeper" level="warn" additivity="false" />
+  <logger name="org.I0Itec.zkclient" level="warn" additivity="false" />
+
+  <root level="info">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+</configuration>
+
