@@ -15,6 +15,7 @@ divolte {
 
   tracking {
     schema_file = /path/to/divolte-examples/avro-schema/src/main/resources/JavadocEventRecord.avsc
-    schema_mapping = /path/to/divolte-examples/avro-schema/mapping.conf
   }
 }
+
+include file("/path/to/divolte-examples/avro-schema/mapping.conf")
