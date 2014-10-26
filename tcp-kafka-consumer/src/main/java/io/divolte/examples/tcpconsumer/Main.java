@@ -41,16 +41,15 @@ public class Main {
         private OutputStream stream;
 
         @Override
-        public void handle(JavadocEventRecord event) throws Exception {
-            System.out.println("Got record: " + event.toString());
-            stream.write(event.toString().getBytes(StandardCharsets.UTF_8));
-            stream.write("\n".getBytes(StandardCharsets.UTF_8));
-        }
-
-        @Override
         public void setup() throws Exception {
             socket = new Socket(TCP_SERVER_HOST, TCP_SERVER_PORT);
             stream = socket.getOutputStream();
+        }
+
+        @Override
+        public void handle(JavadocEventRecord event) throws Exception {
+            stream.write(event.toString().getBytes(StandardCharsets.UTF_8)); // Avro's toString already produces JSON.
+            stream.write("\n".getBytes(StandardCharsets.UTF_8));
         }
 
         @Override
