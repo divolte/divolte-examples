@@ -19,5 +19,8 @@ bin
 
 target
 
+#iPython
+.ipynb_checkpoints
+
 # Local/non-default configuration
 application.conf
