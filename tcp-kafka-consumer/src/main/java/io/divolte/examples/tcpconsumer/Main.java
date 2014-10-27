@@ -48,8 +48,10 @@ public class Main {
 
         @Override
         public void handle(JavadocEventRecord event) throws Exception {
-            stream.write(event.toString().getBytes(StandardCharsets.UTF_8)); // Avro's toString already produces JSON.
-            stream.write("\n".getBytes(StandardCharsets.UTF_8));
+            if (!event.getDetectedDuplicate()) {
+                stream.write(event.toString().getBytes(StandardCharsets.UTF_8)); // Avro's toString already produces JSON.
+                stream.write("\n".getBytes(StandardCharsets.UTF_8));
+            }
         }
 
         @Override
