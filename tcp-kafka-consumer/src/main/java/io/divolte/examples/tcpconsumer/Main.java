@@ -15,7 +15,7 @@ public class Main {
     private static final String KAFKA_TOPIC = "divolte";
 
     public static void main(String[] args) {
-        final DivolteKafkaConsumer<JavadocEventRecord> consumer = new DivolteKafkaConsumer<>(
+        final DivolteKafkaConsumer<JavadocEventRecord> consumer = DivolteKafkaConsumer.createConsumer(
                 KAFKA_TOPIC,
                 ZOOKEEPER_QUORUM,
                 KAFKA_CONSUMER_GROUP_ID,
