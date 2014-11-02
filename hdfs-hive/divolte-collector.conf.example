@@ -1,7 +1,6 @@
 divolte {
   kafka_flusher {
     enabled = false
-    threads = 1
   }
 
   hdfs_flusher {
@@ -13,8 +12,8 @@ divolte {
       // Point to your HDFS NameNode here.
       // In case of multiple NameNode's or other configuration,
       // you can leave out this configuration altogether and
-      // make sure there is a HADOOP_CONF_DIR on the Divolte 
-      // classpath.
+      // make sure there is a HADOOP_CONF_DIR env var that points
+      // to your Hadoop configuration files.
       uri = "hdfs://127.0.0.1:8020/"
 
       // Set to a higher value for production use.
@@ -39,11 +38,6 @@ divolte {
       working_dir = "/divolte/inflight"
       publish_dir = "/divolte/published"
     }
-  }
-  
-  javascript {
-    logging = true
-    debug = true
   }
 
   tracking {

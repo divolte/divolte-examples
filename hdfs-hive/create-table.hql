@@ -2,12 +2,12 @@
 -- created by Divolte.
 
 -- Note that we only explicitly create one column in the table; this is
--- required in order to have a valid SQL statement. Hive will, however, 
+-- required in order to have a valid SQL statement. Hive will, however,
 -- create a table with all the fields present in the provided Avro schema.
 
 -- Prior to running this, be sure to copy the schema file to HDFS.
 -- (JavadocEventRecord.avsc from the avro-schema directory in this same
--- project)
+-- repo)
 
 CREATE EXTERNAL TABLE javadoc (
   firstInSession boolean

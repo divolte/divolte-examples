@@ -70,7 +70,7 @@ nc -kl 1234
 ```sh
 cd divolte-examples/tcp-kafka-consumer
 mvn clean package
-java -jar target/tcp-kafka-consumer-0.1-SNAPSHOT-jar-with-dependencies.jar
+java -jar target/tcp-kafka-consumer-*-jar-with-dependencies.jar
 ```
 > Note: for this to work, you need to have the [avro-schema](../avro-schema) project installed into your local Maven repository.
 
