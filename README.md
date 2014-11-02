@@ -18,7 +18,7 @@ Prerequisites:
 All the examples above are based on a Divolte Collector setup that collects click stream data for Javadoc pages. Since all generated Javadoc pages use the same URL layout, it should work with the Javadocs for any project of your choice. To generate Divolte Collector enabled Javadoc for your project, you can use the following command *from the src directory* of your project:
 
 ```sh
-# If you have a special source encoding, add: -encoding "ISO-8859-1"
+# If you have a special source encoding, add: -encoding "YOUR_ENCODING" (e.g. -encoding "ISO-8859-1")
 javadoc -d <your-output-directory> -bottom '<script src="//localhost:8290/divolte.js" defer async></script>' -subpackages .
 ```
 

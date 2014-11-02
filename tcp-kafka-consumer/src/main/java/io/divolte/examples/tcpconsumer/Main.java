@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 public class Main {
-    private static final int NUM_CONSUMER_THREADS = 2;
+    private static final int NUM_CONSUMER_THREADS = 1;
     private static final String KAFKA_CONSUMER_GROUP_ID = "divolte-tcp-consumer";
     private static final String ZOOKEEPER_QUORUM = "127.0.0.1:2181";
     private static final String KAFKA_TOPIC = "divolte";
