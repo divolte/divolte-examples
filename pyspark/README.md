@@ -1,26 +1,54 @@
-Python based Spark examples for Divolte Collector data
-======================================================
+Divolte Example: Processing with Spark (Python)
+===============================================
 
-We publish [a helper library](divolte/divolte-spark) for using Avro files in [Apache Spark](https://spark.apache.org/). Here are two examples of using this in PySpark. One is a Python script, the other is a iPython notebook.
+This directory contains some examples of processing Divolte events with Spark
+using Python.
 
-## Building the required helper library
-Clone the [divolte/divolte-spark](divolte/divolte-spark) project from Github. We use [sbt](http://www.scala-sbt.org/) for building this library (as it is Scala). After cloning, run:
-```sh
-cd divolte-spark
-sbt assembly
-```
+The examples are:
 
-## Running iPython notebook
-```sh
-IPYTHON=1 IPYTHON_OPTS="notebook" /path/to/spark/bin/pyspark --jars /path/to/divolte-spark/target/scala-2.10/divolte-spark-assembly-*.jar
-```
+ - `divolte_spark_example_notebook.ipynb`: An [IPython](http://ipython.org) notebook
+    which demonstrates how to interactively process Divolte events using Spark.
+ - `divolte_spark_example.py`: A standalone python script which can be submitted
+    using `spark-submit`.
 
-On some Spark distributions (most notably CDH), the --jars option doesn't actually do what the documentation says. In that case, you need to run with:
-```sh
-IPYTHON=1 IPYTHON_OPTS="notebook --ip=0.0.0.0" /path/to/spark/bin/pyspark --jars /path/to/divolte-spark/target/scala-2.10/divolte-spark-assembly-*.jar --driver-class-path /path/to/divolte-spark/target/scala-2.10/divolte-spark-assembly-*.jar
-```
+These have been tested with the Spark distribution included with CDH.
 
-## Running the Python script
-```sh
-/path/to/spark/bin/spark-submit --jars ../../divolte-spark/target/scala-2.10/divolte-spark-assembly-*.jar pyspark_script_example.py
-```
+Building the Required Helper Library
+------------------------------------
+
+Our examples make use of a helper library that we provide in our
+[Divolte Spark](https://github.com/divolte/divolte-spark) project. We use
+[SBT](http://www.scala-sbt.org/) for building this. Once you have it installed you
+can build the helper library:
+
+    % git clone https://github.com/divolte/divolte-spark.git
+    % cd divolte-spark
+    % sbt assembly
+    % ls -l target/scala-*/divolte-spark-assembly-*.jar
+
+Using the Example IPython Notebook
+----------------------------------
+
+To start the IPython notebook:
+
+    % export DIVOLTE_SPARK_JAR="<PATH_TO_DIVOLTE_SPARK_JAR>"
+    % export IPYTHON=1
+    % export IPYTHON_OPTS="notebook"
+    % pyspark --jars "$DIVOLTE_SPARK_JAR" --driver-class-path "$DIVOLTE_SPARK_JAR"
+
+You should set `DIVOLTE_SPARK_JAR` to match the location of the helper library built
+in the previous section.
+
+If run locally, your browser should automatically open to the notebook. If not,
+open the URL displayed by IPython in your browser.
+
+Running the Standalone Example
+------------------------------
+
+To execute the standalone example:
+
+    % export DIVOLTE_SPARK_JAR="<PATH_TO_DIVOLTE_SPARK_JAR>"
+    % spark-submit --jars "$DIVOLTE_SPARK_JAR" --driver-class-path "$DIVOLTE_SPARK_JAR" divolte_spark_example.py DIVOLTE_LOG_PATH
+
+As with the IPython notebook example you should set `DIVOLTE_SPARK_JAR` to match
+the location of where you built the helper library.
