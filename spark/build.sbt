@@ -14,13 +14,32 @@ scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-target
 // Experimental: improved incremental compilation.
 incOptions    := incOptions.value.withNameHashing(nameHashing = true)
 
-// Provided: the Spark container supplies its own version.
-libraryDependencies += "org.apache.spark"  %% "spark-core"    % "1.1.0" % "provided"
+// Enable during development to access local maven artifacts.
+resolvers += Resolver.mavenLocal
 
-libraryDependencies += "io.divolte"        %% "divolte-spark" % "0.1-SNAPSHOT"
+val sparkV = "1.1.0"
+
+// Provided: the Spark container supplies its own version.
+libraryDependencies += "org.apache.spark"  %% "spark-core"            % sparkV % "provided"
+
+libraryDependencies += "org.apache.spark"  %% "spark-streaming"       % sparkV % "provided"
+
+libraryDependencies += "org.apache.spark"  %% "spark-streaming-kafka" % sparkV excludeAll(
+  ExclusionRule(organization = "org.apache.spark", name = "spark-streaming_2.10"),
+  ExclusionRule(organization = "javax.jms")
+)
+
+libraryDependencies += "io.divolte"        %% "divolte-spark"         % "0.1-SNAPSHOT"
+
+libraryDependencies += "org.apache.kafka"  %% "kafka"                 % "0.8.1.1" excludeAll(
+  ExclusionRule(organization = "com.sun.jdmk"),
+  ExclusionRule(organization = "com.sun.jmx"),
+  ExclusionRule(organization = "javax.jms"),
+  ExclusionRule(organization = "log4j")
+)
 
 // Necessary to prevent Avro/Hadoop version conflicts.
-libraryDependencies += "org.apache.hadoop" %  "hadoop-client" % "2.3.0" % "provided"
+libraryDependencies += "org.apache.hadoop" %  "hadoop-client"         % "2.3.0" % "provided"
 
 Revolver.settings
 

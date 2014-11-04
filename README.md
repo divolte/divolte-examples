@@ -16,7 +16,7 @@ Contained here are some common usage examples of
     - [`pyspark/`](pyspark/):
       Python API, standalone and using IPython notebook.
     - [`spark/`](spark/):
-      Scala API.
+      Scala API, standalone and Spark Streaming.
 
 Before You Begin
 ----------------
