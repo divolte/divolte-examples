@@ -25,7 +25,7 @@ object DivolteSparkExample extends App {
   val path = args match {
     case Array(firstArg, _*) => firstArg
     case _ =>
-      System.err.println("Usage: DivolteSparkExample PATH_TO_DIVOLTE_LOGS")
+      Console.err.println("Usage: DivolteSparkExample PATH_TO_DIVOLTE_LOGS")
       sys.exit(1)
   }
 
