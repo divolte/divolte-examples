@@ -45,7 +45,9 @@ the same URL layout, it should work with the Javadocs for any project of
 your choice. To generate Divolte Collector enabled Javadoc for your project,
 you can use the following command *from the source directory* of your project:
 
-    % javadoc -d YOUR_OUTPUT_DIRECTORY -bottom <script src="//localhost:8290/divolte.js" defer async></script>' -subpackages .
+    % javadoc -d YOUR_OUTPUT_DIRECTORY \
+        -bottom <script src="//localhost:8290/divolte.js" defer async></script>' \
+        -subpackages .
 
 Note that if you have a special source encoding you should add
 `-encoding "YOUR_ENCODING"` (e.g. `-encoding "ISO-8859-1"`) to the command.
