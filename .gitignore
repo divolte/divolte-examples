@@ -24,3 +24,6 @@ target
 
 # Local/non-default configuration
 application.conf
+
+# People may unpack the Javadoc somewhere in here.
+javadoc-commons-lang-divolte/
