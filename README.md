@@ -4,7 +4,7 @@ Divolte Collector usage examples
 Contained here are some common usage examples of
 [Divolte Collector][1]. Here you will find:
 
- - [`avro-schmaa/`](avro-schema/):
+ - [`avro-schema/`](avro-schema/):
    A custom Avro schema and Divolte schema mapping for capturing clickstream
    events on Javadoc pages (this is used in the other examples).
  - [`hdfs-hive/`](hdfs-hive/):
