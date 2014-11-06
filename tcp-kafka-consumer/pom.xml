@@ -13,7 +13,7 @@
     <dependency>
       <groupId>io.divolte</groupId>
       <artifactId>divolte-kafka-consumer</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>0.1</version>
     </dependency>
     <dependency>
       <groupId>io.divolte.examples</groupId>
