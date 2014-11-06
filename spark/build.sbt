@@ -1,4 +1,5 @@
-import AssemblyKeys._
+
+
 import spray.revolver.RevolverPlugin.Revolver
 
 organization  := "io.divolte"
