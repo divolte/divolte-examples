@@ -24,14 +24,14 @@ can build the helper library:
     % git clone https://github.com/divolte/divolte-spark.git
     % cd divolte-spark
     % sbt assembly
-    % ls -l target/scala-*/divolte-spark-assembly-*.jar
+    % DIVOLTE_SPARK_JAR="$PWD"/target/scala-*/divolte-spark-assembly-*.jar
 
 Using the Example IPython Notebook
 ----------------------------------
 
 To start the IPython notebook:
 
-    % export DIVOLTE_SPARK_JAR="<PATH_TO_DIVOLTE_SPARK_JAR>"
+    % DIVOLTE_SPARK_JAR="<PATH_TO_DIVOLTE_SPARK_JAR>"
     % export IPYTHON=1
     % export IPYTHON_OPTS="notebook"
     % pyspark --jars "$DIVOLTE_SPARK_JAR" --driver-class-path "$DIVOLTE_SPARK_JAR"
@@ -47,7 +47,7 @@ Running the Standalone Example
 
 To execute the standalone example:
 
-    % export DIVOLTE_SPARK_JAR="<PATH_TO_DIVOLTE_SPARK_JAR>"
+    % DIVOLTE_SPARK_JAR="<PATH_TO_DIVOLTE_SPARK_JAR>"
     % spark-submit --jars "$DIVOLTE_SPARK_JAR" --driver-class-path "$DIVOLTE_SPARK_JAR" divolte_spark_example.py DIVOLTE_LOG_PATH
 
 As with the IPython notebook example you should set `DIVOLTE_SPARK_JAR` to match
