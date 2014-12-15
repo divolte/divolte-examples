@@ -20,7 +20,7 @@
   <groupId>io.divolte.examples</groupId>
   <artifactId>avro-schema</artifactId>
   <packaging>jar</packaging>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1</version>
   <name>avro-schema</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
