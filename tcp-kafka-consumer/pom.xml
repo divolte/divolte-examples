@@ -20,7 +20,7 @@
   <groupId>io.divolte.examples</groupId>
   <artifactId>tcp-kafka-consumer</artifactId>
   <packaging>jar</packaging>
-  <version>0.1</version>
+  <version>0.2-SNAPSHOT</version>
   <name>tcp-kafka-consumer</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,7 +34,7 @@
     <dependency>
       <groupId>io.divolte.examples</groupId>
       <artifactId>avro-schema</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <build>

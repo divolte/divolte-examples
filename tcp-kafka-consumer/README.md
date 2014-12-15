@@ -49,7 +49,7 @@ cd kafka_2.10-0.8.1.1/bin
 #### Step 3: start Divolte Collector
 Go into the bin directory of your installation and run:
 ```sh
-cd divolte-collector-0.1/bin
+cd divolte-collector-0.2/bin
 ./divolte-collector
 ```
 
