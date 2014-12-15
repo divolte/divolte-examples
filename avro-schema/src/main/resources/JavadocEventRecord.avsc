@@ -20,6 +20,7 @@
     "name": "JavadocEventRecord",
     "fields": [
         { "name": "detectedDuplicate",       "type": "boolean"},
+        { "name": "detectedCorruption",      "type": "boolean"},
         { "name": "firstInSession",          "type": "boolean"},
         { "name": "timestamp",               "type": "long"},
         { "name": "remoteHost",              "type": "string"},
