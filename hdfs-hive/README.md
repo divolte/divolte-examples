@@ -50,10 +50,12 @@ divolte {
 
   tracking {
     schema_file = /path/to/divolte-examples/avro-schema/src/main/resources/JavadocEventRecord.avsc
+    schema_mapping {
+      version = 2
+      mapping_script_file = "/path/to/divolte-examples/avro-schema/mapping.groovy"
+    }
   }
 }
-
-include file("/path/to/code/divolte-examples/avro-schema/mapping.conf")
 ```
 > *Make sure you correct the paths to the Avro schema and mapping configuration!*
 
