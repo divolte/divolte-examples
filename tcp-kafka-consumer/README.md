@@ -1,7 +1,7 @@
 Divolte tcp-kafka-consumer example
 ==================================
 
-This example uses the [divolte-kafka-consumer](/divolte/divolte-kafka-consumer) helper library to create a Kafka consumer that sends events as JSON string to a TCP socket. To run this, you need:
+This example uses the [divolte-kafka-consumer](https://github.com/divolte/divolte-kafka-consumer) helper library to create a Kafka consumer that sends events as JSON string to a TCP socket. To run this, you need:
 - The accompanying Javadoc Avro schema installed into your local Maven repository.
 - A running HTTP server which serves the static Javadoc HTML files instrumented with the Divolte Collector tag.
 - Kafka (including Zookeeper)
@@ -9,7 +9,7 @@ This example uses the [divolte-kafka-consumer](/divolte/divolte-kafka-consumer) 
 ## Building and running
 
 #### Step 1: install and configure Divolte Collector
-Download the latest [Divolte Collector](/divolte/divolte-collector) release. Use either the .zip or the .tar.gz archive. Extract the archive to a directory of your choice. In the installation, there is a conf/ directory. In here, create a file called divolte-collector.conf with the following contents:
+Download the latest [Divolte Collector](https://github.com/divolte/divolte-collector) release. Use either the .zip or the .tar.gz archive. Extract the archive to a directory of your choice. In the installation, there is a conf/ directory. In here, create a file called divolte-collector.conf with the following contents:
 ```hocon
 divolte {
   kafka_flusher {
