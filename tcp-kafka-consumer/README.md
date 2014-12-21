@@ -83,7 +83,7 @@ When you click around the Javadoc pages, you console should show events in JSON 
 ```
 
 ## A more interesting use
-Of course, streaming events as JSON to your console over TCP is not very interesting. But if you happen to have [ElasticSearch, Logstash and Kibana ](http://www.elasticsearch.org/overview/elkdownloads/) running, you kan create near real-time dashboards using this example by streaming you data throuhg Logstash into ElasticSearch and creating a Kibana dashboard on top of it. Here is a example logstash configuration for use on your local machine:
+Of course, streaming events as JSON to your console over TCP is not very interesting. But if you happen to have [ElasticSearch, Logstash and Kibana ](http://www.elasticsearch.org/overview/elkdownloads/) running, you kan create near real-time dashboards using this example by streaming your data through Logstash into ElasticSearch and creating a Kibana dashboard on top of it. Also, Logstash won't have a problem with multiple threads connecting to it concurrently. Here is a example logstash configuration for use on your local machine:
 ```sh
 logstash -e '
 input {
