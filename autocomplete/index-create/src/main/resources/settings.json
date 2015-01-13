@@ -1,0 +1,55 @@
+{
+  "index": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+    "analysis": {
+      "filter": {
+        "en_stemmer": {
+          "type": "stemmer",
+          "language": "english"
+        },
+        "uni_bigrams": {
+          "type": "shingle",
+          "output_unigrams": true
+        },
+        "no_shorts": {
+          "type": "length",
+          "min": 3
+        }
+      },
+      "tokenizer": {
+        "ws": {
+          "type": "whitespace"
+        },
+        "comment": {
+          "type": "standard"
+        }
+      },
+      "analyzer": {
+        "java_type": {
+          "type": "custom",
+          "tokenizer": "ws"
+        },
+        "java_package": {
+          "type": "custom",
+          "tokenizer": "ws"
+        },
+        "doc_comment": {
+          "type": "custom",
+          "tokenizer": "comment",
+          "filter": [
+            "lowercase",
+            "asciifolding",
+            "uni_bigrams",
+            "no_shorts",
+            "en_stemmer"
+          ]
+        },
+        "method_name": {
+          "type": "custom",
+          "tokenizer": "ws"
+        }
+      }
+    }
+  }
+}

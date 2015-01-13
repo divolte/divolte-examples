@@ -1,0 +1,53 @@
+{
+  "_all": {
+    "enabled": false
+  },
+  "_type": {
+    "index": "no"
+  },
+  "_timestamp": {
+    "enabled": false
+  },
+  "_source": {
+    "enabled": true
+  },
+  "dynamic": false,
+  "properties": {
+    "link": {
+      "type": "string",
+      "index": "no"
+    },
+    "type_name": {
+      "type": "string",
+      "index": "analyzed",
+      "analyzer": "java_type"
+    },
+    "package": {
+      "type": "string",
+      "index": "analyzed",
+      "analyzer": "java_package"
+    },
+    "comment": {
+      "type": "string",
+      "index": "analyzed",
+      "analyzer": "doc_comment"
+    },
+    "methods": {
+      "type": "object",
+      "enabled": true,
+      "dynamic": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "index": "analyzed",
+          "analyzer": "method_name"
+        },
+        "comment": {
+          "type": "string",
+          "index": "analyzed",
+          "analyzer": "doc_comment"
+        }
+      }
+    }
+  }
+}
