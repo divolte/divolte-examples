@@ -18,9 +18,12 @@ package io.divolte.exaples.webapp;
 
 import io.dropwizard.Configuration;
 
+import javax.annotation.ParametersAreNullableByDefault;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@ParametersAreNullableByDefault
 public class WebappConfiguration extends Configuration {
     private static final String DEFAULT_CLUSTER_NAME = "elasticsearch";
     private static final String[] DEFAULT_HOSTS = new String[] { "localhost" };

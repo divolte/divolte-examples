@@ -21,6 +21,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -54,8 +56,8 @@ public class CompletionResource {
                     .text(q)
                     .field("suggest")
                 ).execute(actionListener(
-                        (sr) -> response.resume(new CompletionResponse(sr)),
-                        (ex) -> response.resume(ex)
+                        (suggestionResponse) -> response.resume(new CompletionResponse(suggestionResponse)),
+                        (exception) -> response.resume(exception)
                         ));
     }
 
@@ -73,9 +75,9 @@ public class CompletionResource {
              */
             this.searches = StreamSupport
                     .stream(response.getSuggest().spliterator(), false)
-                    .flatMap((s) -> s.getEntries().stream())
-                    .flatMap((e) -> e.getOptions().stream())
-                    .map((o) -> new CompletionOption(o.getText().string(), null))
+                    .flatMap((suggestions) -> suggestions.getEntries().stream())
+                    .flatMap((entries) -> entries.getOptions().stream())
+                    .map((option) -> new CompletionOption(option.getText().string(), null))
                     .collect(Collectors.toList());
 
             this.topHits = new CompletionOption[] {
@@ -84,15 +86,17 @@ public class CompletionResource {
             };
         }
 
+        @ParametersAreNonnullByDefault
         @JsonInclude(Include.NON_NULL)
         public static final class CompletionOption {
             @JsonProperty(value = "value", required = true)
             public final String value;
 
+            @Nullable
             @JsonProperty("link")
             public final String link;
 
-            public CompletionOption(final String value, final String link) {
+            public CompletionOption(final String value, @Nullable final String link) {
                 this.value = value;
                 this.link = link;
             }
