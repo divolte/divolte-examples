@@ -2,25 +2,40 @@ from flask import *
 from elasticsearch import Elasticsearch
 import json
 
-import config
-
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
 @app.route('/api/complete/', methods = ['GET'])
-def search():
-    searches = [
-        { 'value': 'aap' },
-        { 'value': 'noot' },
-        { 'value': 'mies' }
-    ]
+def complete():
+    q = request.args.get('q')
+    if not q:
+        return jsonify()
+
+    es_query = {
+        'suggest': {
+            'text': q,
+            'completion': {
+                'field': 'suggest'
+            }
+        }
+    }
+
+    searches = [{
+                    'value': option['text']
+                }
+                for option in es.suggest(index='suggestion', body=es_query)['suggest'][0]['options']]
 
     top_hits = [
-        { 'value': 'BooleanUtils' },
-        { 'value': 'StringUtils' }
+        {
+            'value': 'org.apache.commons.lang3.BooleanUtils',
+            'link': 'http://localhost:5000/static/javadoc/org/apache/commons/lang3/BooleanUtils.html'
+        },
+        {
+            'value': 'org.apache.commons.lang3.StringUtils',
+            'link': 'http://localhost:5000/static/javadoc/org/apache/commons/lang3/StringUtils.html'
+        }
     ]
     return jsonify(searches = searches, top_hits=top_hits)
-
 
 def es_search(q):
     es_query = {

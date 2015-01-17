@@ -1,3 +1,24 @@
+.suggestions-header {
+  /*text-transform: uppercase;*/
+  font-size: -4;
+  color: #333333;
+  font-weight: lighter;
+  text-align: right;
+  padding: 3px 20px;
+  display: block;
+  width: 100%;
+}
+
+.suggestions-footer {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+/*
+ * Below is a fix for Twitter typeahead.js with bootstrap 3,
+ * thanks to Shan Zhou (https://github.com/hyspace)
+ */
+
 /*
  * typehead.js-bootstrap3.less
  * @version 0.2.3

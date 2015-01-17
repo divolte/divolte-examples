@@ -1,0 +1,25 @@
+{
+  "suggestion" : {
+    "_all": {
+      "enabled": false
+    },
+    "_type": {
+      "index": "no"
+    },
+    "_timestamp": {
+      "enabled": false
+    },
+    "_source": {
+      "enabled": true
+    },
+    "dynamic": false,
+    "properties" : {
+      "suggest" : {
+        "type" : "completion",
+        "index_analyzer" : "suggest",
+        "search_analyzer" : "suggest",
+        "payloads" : true
+      }
+    }
+  }
+}

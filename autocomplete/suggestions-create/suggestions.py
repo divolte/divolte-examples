@@ -1,0 +1,133 @@
+import argparse
+import sys
+import json
+from elasticsearch import Elasticsearch
+from elasticsearch import helpers as es_helpers
+from pyspark import SparkContext
+from functools import partial
+
+def search_fragments(session):
+    def fragment_dict(
+            start_time,
+            phrase,
+            num_results,
+            time_to_first_result,
+            time_to_next_search,
+            event_count,
+            results):
+        return {
+                    'start_time': start_time,
+                    'phrase': phrase,
+                    'num_results': num_results,
+                    'time_to_first_result': None if time_to_first_result == sys.maxint else time_to_first_result,
+                    'time_to_next_search': None if time_to_next_search == sys.maxint else time_to_next_search,
+                    'event_count': event_count,
+                    'results': results
+                  }
+
+    phrase = None
+    start_time = sys.maxint
+    num_results = 0
+    time_to_first_result = sys.maxint
+    event_count = 0
+    results = []
+    
+    for event in session:
+        if (event['pageType'] == 'search') and (event['searchPhrase'] != phrase):
+            if phrase:
+                yield fragment_dict(start_time, phrase, num_results, time_to_first_result,
+                                    event['timestamp'] - start_time, event_count, results)
+                
+            start_time = event['timestamp']
+            phrase = event['searchPhrase']
+            num_results = 0
+            time_to_first_result = sys.maxint
+            event_count = 0
+            results = []
+        elif event['pageType'] != 'search' and event['isSearchResult']:
+            num_results += 1
+            time_to_first_result = min(time_to_first_result, event['timestamp'] - start_time)
+            results += [event['location']]
+
+        event_count += 1
+    
+    if phrase:
+        yield fragment_dict(start_time, phrase, num_results, time_to_first_result,
+                            sys.maxint, event_count, results)
+
+def events_rdd(sc, hdfs_uri, avro_schema):
+    conf = { 'avro.schema.input.key': file(avro_schema).read() }
+    return sc.newAPIHadoopFile(
+        hdfs_uri,
+        'org.apache.avro.mapreduce.AvroKeyInputFormat',
+        'org.apache.avro.mapred.AvroKey',
+        'org.apache.hadoop.io.NullWritable',
+        keyConverter='io.divolte.spark.pyspark.avro.AvroWrapperToJavaConverter',
+        conf=conf).map(lambda (k,v): k)
+
+def strip_accents(s):
+   return ''.join([c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn'])
+
+def search_extraction((id, session)):
+    return [sf for sf in search_fragments(session)]
+
+def create_index(es):
+    if es.indices.exists('suggestion'):
+        es.indices.delete('suggestion')
+
+    body = {
+        'settings': json.load(file('settings.json')),
+        'mappings': json.load(file('mapping.json'))
+    }
+
+    es.indices.create(index='suggestion', body=body)
+
+def index_suggestion_partition(suggestions, hosts, port):
+    def actions():
+        for phrase, weight in suggestions:
+            yield {
+                '_index': 'suggestion',
+                '_type': 'suggestion',
+                '_op_type': 'index',
+                '_source': {
+                    'suggest': {
+                        'input': phrase,
+                        'weight': weight
+                    }
+                }
+            }
+
+    es = Elasticsearch([ {'host': host, 'port': port } for host in hosts ])
+    for x in es_helpers.streaming_bulk(client=es, actions=iter(actions()), chunk_size=100, raise_on_error=True):
+        pass # We MUST exhaust the result of the streaming_bulk operation, otherwise notihing is performed
+
+def main(args):
+    print 'Connecting to Elasticsearch...'
+    es = Elasticsearch([ {'host': host, 'port': args.es_port } for host in args.es_hosts ])
+    print '(Re)createing index...'
+    create_index(es)
+
+    print 'Executing Spark job...'
+    sc = SparkContext()
+    events = events_rdd(sc, args.input, args.schema)
+    searches = events.keyBy(lambda e: e['sessionId']).groupByKey().flatMap(search_extraction)
+
+    successes = searches.filter(lambda s: s['num_results'] > 0)
+    suggestions = successes.map(lambda s: (s['phrase'], 1)).reduceByKey(lambda x,y: x+y)
+
+    print 'Sending suggestions to Elasticsearch...'
+
+    suggestions.foreachPartition(partial(index_suggestion_partition, hosts=args.es_hosts, port=args.es_port))
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Take click stream data from HDFS and create and populate a ElasticSearch index for autocomplete suggestions.')
+    parser.add_argument('--input', '-i', metavar='HDFS_URI', type=str, required=True, help='HDFS URI pointing to the published Avro files created by Divolte Collector. Can be a glob.')
+    parser.add_argument('--schema', '-s', metavar='AVRO_SCHEMA_FILE', type=str, required=True, help='The Avro schema file to use as reading schema for the data.')
+    parser.add_argument('--es-hosts', '-e', metavar='HOSTNAME', type=str, nargs="+", help='A list of ElasticSearch hosts to connect to.', default=['localhost'])
+    parser.add_argument('--es-port', '-p', metavar='PORT', type=int, help='Port number that ElasticSearch runs on.', default=9200)
+
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    main(parse_args())

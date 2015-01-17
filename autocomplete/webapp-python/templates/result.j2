@@ -34,7 +34,7 @@
       <div class="row">
         <div class="col-md-8 col-md-offset-2">
 
-          <form action="/search/" method="GET" enctype="application/x-www-form-urlencoded">
+          <form action="/search/" method="GET" enctype="application/x-www-form-urlencoded" id="search-form">
             <div class="input-group input-group-lg">
               {% if q %}
               <input id="search" type="text" name="q" class="form-control" value="{{ q }}">
@@ -66,8 +66,10 @@
       var searchesEngine = new Bloodhound({
         name: 'searches',
         remote: {
-          url: '//localhost:5000/api/complete/?q=%QUERY',
-          filter: function(response) { return response.searches }
+          url: '{{ config.COMPLETION_API_URL }}',
+          filter: function(response) { return response.searches },
+          'rateLimitBy': 'debounce',
+          'rateLimitWait': 15
         },
         datumTokenizer: function(d) {
           return Bloodhound.tokenizers.whitespace(d.value);
@@ -78,8 +80,10 @@
       var topHitsEngine = new Bloodhound({
         name: 'top_hits',
         remote: {
-          url: '//localhost:5000/api/complete/?q=%QUERY',
-          filter: function(response) { return response.top_hits }
+          url: '{{ config.COMPLETION_API_URL }}',
+          filter: function(response) { return response.top_hits },
+          'rateLimitBy': 'debounce',
+          'rateLimitWait': 15
         },
         datumTokenizer: function(d) {
           return Bloodhound.tokenizers.whitespace(d.value);
@@ -98,19 +102,26 @@
           {
             name: 'searches',
             templates: {
-              header: 'Suggestions:',
-              empty: ''
+              header: '<span class="suggestions-header">Suggestions</span>',
+              empty: '',
+              footer: '<hr class="suggestions-footer"/>'
             },
             source: searchesEngine.ttAdapter()
           },{
             name: 'top_hits',
             templates: {
-              header: 'Popular results:',
+              header: '<span class="suggestions-header">Popular results</span>',
               empty: ''
             },
             source: topHitsEngine.ttAdapter()
           }
-        ])
+        ]).on('typeahead:selected', function(e,suggestion,dataset) {
+          if (dataset == 'searches') {
+            $('#search-form').submit()
+          } else if (dataset == 'top_hits') {
+            window.location.href = suggestion.link
+          }
+        })
     </script>
     <script src="//localhost:8290/divolte.js" defer async></script>
   </body>

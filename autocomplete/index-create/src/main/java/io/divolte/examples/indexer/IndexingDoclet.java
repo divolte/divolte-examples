@@ -5,6 +5,9 @@ import static org.elasticsearch.common.xcontent.XContentFactory.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -16,6 +19,7 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Resources;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.Doclet;
@@ -24,16 +28,28 @@ import com.sun.javadoc.RootDoc;
 
 public class IndexingDoclet extends Doclet {
 
-    private static final int ES_PORT = 9300;
-    private static final String ES_HOST = "127.0.0.1";
+    private static final int ES_DEFAULT_PORT = 9300;
+    private static final String ES_HOST_OPTION = "-eshost";
+    private static final String ES_CLUSTERNAME_OPTION = "-esclustername";
+    private static final String ES_PORT_OPTION = "-esport";
+    private static final ImmutableSet<String> ES_OPTIONS = ImmutableSet.of(ES_PORT_OPTION, ES_CLUSTERNAME_OPTION, ES_HOST_OPTION);
 
     public static boolean start(RootDoc root) {
-        final Settings esSettings = settingsBuilder().put("cluster.name", "elasticsearch_friso").build();
-        try (
-            @SuppressWarnings("resource")
-            final Client client = new TransportClient(esSettings).addTransportAddress(new InetSocketTransportAddress(ES_HOST, ES_PORT))
-            ) {
+        final Settings esSettings = settingsBuilder().put("cluster.name", esClusterName(root.options())).build();
+        final int esPort = esPort(root.options());
+        final Set<String> esHosts = esHosts(root.options());
 
+        System.err.println("Using ElasticSearch settings:");
+        System.err.println("    cluster name: " + esClusterName(root.options()));
+        System.err.println("    hosts:        " + esHosts);
+        System.err.println("    port:         " + esPort);
+
+        try (
+            final TransportClient client = new TransportClient(esSettings)
+            ) {
+            for (String host : esHosts) {
+                client.addTransportAddress(new InetSocketTransportAddress(host, esPort));
+            }
             deleteIndexIfExists(client);
             createIndex(client);
 
@@ -59,6 +75,38 @@ public class IndexingDoclet extends Doclet {
 
         System.err.println("Done.");
         return true;
+    }
+
+    public static int optionLength(String option) {
+        if (ES_OPTIONS.contains(option)) {
+            return 2;
+        } else {
+            return 0;
+        }
+    }
+
+    private static Set<String> esHosts(String[][] options) {
+        final Set<String> result = Stream.of(options)
+                                         .filter((o) -> o.length == 2 && o[0].equals(ES_HOST_OPTION))
+                                         .map((o) -> o[1]).collect(Collectors.toSet());
+
+        return result.isEmpty() ? ImmutableSet.of("localhost") : result;
+    }
+
+    private static int esPort(String[][] options) {
+        return Stream.of(options)
+                .filter((o) -> o.length == 2 && o[0].equals(ES_PORT_OPTION))
+                .findFirst()
+                .map((o) -> Integer.parseInt(o[1]))
+                .orElse(ES_DEFAULT_PORT);
+    }
+
+    private static String esClusterName(String[][] options) {
+        return Stream.of(options)
+                .filter((o) -> o.length == 2 && o[0].equals(ES_CLUSTERNAME_OPTION))
+                .findFirst()
+                .map((o) -> o[1])
+                .orElse("elasticsearch");
     }
 
     private static void createIndex(final Client client) throws IOException {
