@@ -39,20 +39,24 @@ public class Webapp extends Application<WebappConfiguration>{
 
     @Override
     public void run(final WebappConfiguration configuration, final Environment environment) throws Exception {
-        addCorsHeadersFilter(environment);
+        enableCrossOriginResourceSharing(environment);
 
         final TransportClient client = setupElasticSearchClient(configuration);
+        registerHealthCheck(environment, client);
         registerAutocompleteResource(environment, client);
     }
 
+    private void registerHealthCheck(final Environment environment, final TransportClient client) {
+        final CompletionHealthCheck check = new CompletionHealthCheck(client);
+        environment.healthChecks().register("completion", check);
+    }
+
     private void registerAutocompleteResource(final Environment environment, final TransportClient client) {
-        // Register our resource
         final CompletionResource completion = new CompletionResource(client);
         environment.jersey().register(completion);
     }
 
-    private void addCorsHeadersFilter(final Environment environment) {
-        // Enable CORS
+    private void enableCrossOriginResourceSharing(final Environment environment) {
         Dynamic filter = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
         filter.setInitParameter("allowedOrigins", "*"); // allowed origins comma separated
         filter.setInitParameter("allowedHeaders", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin");

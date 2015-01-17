@@ -32,6 +32,7 @@ import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.MediaType;
 
 import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.suggest.SuggestRequestBuilder;
 import org.elasticsearch.action.suggest.SuggestResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
@@ -51,14 +52,18 @@ public class CompletionResource {
 
     @GET
     public void complete(@QueryParam("q") final String q, @Suspended final AsyncResponse response) {
-        esClient.prepareSuggest("suggestion").addSuggestion(
-                new CompletionSuggestionBuilder("suggest")
-                    .text(q)
-                    .field("suggest")
-                ).execute(actionListener(
+        completionRequest(esClient, q).execute(actionListener(
                         (suggestionResponse) -> response.resume(new CompletionResponse(suggestionResponse)),
                         (exception) -> response.resume(exception)
                         ));
+    }
+
+    public static SuggestRequestBuilder completionRequest(final Client esClient, final String q) {
+        return esClient.prepareSuggest("suggestion").addSuggestion(
+                new CompletionSuggestionBuilder("suggest")
+                    .text(q)
+                    .field("suggest")
+                );
     }
 
     public static final class CompletionResponse {
@@ -103,7 +108,7 @@ public class CompletionResource {
         }
     }
 
-    private ActionListener<SuggestResponse> actionListener(final Consumer<SuggestResponse> onSuccess, final Consumer<Throwable> onFailure) {
+    public static ActionListener<SuggestResponse> actionListener(final Consumer<SuggestResponse> onSuccess, final Consumer<Throwable> onFailure) {
         return new ActionListener<SuggestResponse>() {
             @Override
             public void onResponse(SuggestResponse response) {
