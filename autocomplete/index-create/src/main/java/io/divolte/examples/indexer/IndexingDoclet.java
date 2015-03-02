@@ -48,7 +48,7 @@ public class IndexingDoclet extends Doclet {
     private static final String ES_HOST_OPTION = "-eshost";
     private static final String ES_CLUSTERNAME_OPTION = "-esclustername";
     private static final String ES_PORT_OPTION = "-esport";
-    private static final ImmutableSet<String> ES_OPTIONS = ImmutableSet.of(ES_PORT_OPTION, ES_CLUSTERNAME_OPTION, ES_HOST_OPTION);
+    private static final Set<String> ES_OPTIONS = ImmutableSet.of(ES_PORT_OPTION, ES_CLUSTERNAME_OPTION, ES_HOST_OPTION);
 
     public static boolean start(RootDoc root) {
         final Settings esSettings = settingsBuilder().put("cluster.name", esClusterName(root.options())).build();

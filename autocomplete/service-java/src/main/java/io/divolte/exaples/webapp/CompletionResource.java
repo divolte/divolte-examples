@@ -16,7 +16,9 @@
 
 package io.divolte.exaples.webapp;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -35,11 +37,13 @@ import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.suggest.SuggestRequestBuilder;
 import org.elasticsearch.action.suggest.SuggestResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion.Entry.Option;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Path("/api/complete")
 @Produces(MediaType.APPLICATION_JSON)
@@ -71,8 +75,9 @@ public class CompletionResource {
         public final List<CompletionOption> searches;
 
         @JsonProperty(value = "top_hits", required = true)
-        public final CompletionOption[] topHits;
+        public final List<CompletionOption> topHits;
 
+        @SuppressWarnings("unchecked")
         public CompletionResponse(SuggestResponse response) {
             /*
              * We request only one suggestion, so it's safe to take all responses
@@ -85,10 +90,21 @@ public class CompletionResource {
                     .map((option) -> new CompletionOption(option.getText().string(), null))
                     .collect(Collectors.toList());
 
-            this.topHits = new CompletionOption[] {
-                    new CompletionOption("BooleanUtils", "http://www.google.com/"),
-                    new CompletionOption("StringUtils", "http://www.google.com/")
-            };
+            this.topHits = StreamSupport
+                    .stream(response.getSuggest().spliterator(), false)
+                    .map((s) -> (CompletionSuggestion) s)
+                    .flatMap((suggestions) -> suggestions.getEntries().stream())
+                    // we need to explicitly state the type here, because the signature uses a supertype that doesn't have a getPayloadAsMap()
+                    .<Option>flatMap((entries) -> entries.getOptions().stream())
+                    .findFirst()
+                    // Casting required; it's Map's all the way down
+                    .map((o) ->
+                        ((List<Map<String,String>>) o.getPayloadAsMap().get("top_hits"))
+                        .stream()
+                        .map((hit) -> new CompletionOption(hit.get("name"), hit.get("link")))
+                        .collect(Collectors.toList())
+                    )
+                    .orElseGet(Collections::emptyList);
         }
 
         @ParametersAreNonnullByDefault

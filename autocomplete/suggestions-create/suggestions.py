@@ -63,7 +63,7 @@ def search_fragments(session):
         elif event['pageType'] != 'search' and event['isSearchResult']:
             num_results += 1
             time_to_first_result = min(time_to_first_result, event['timestamp'] - start_time)
-            results += [event['location']]
+            results += [ { 'type': event['javaType'], 'package': event['javaPackage'] } ]
 
         event_count += 1
     
@@ -87,28 +87,31 @@ def strip_accents(s):
 def search_extraction((id, session)):
     return [sf for sf in search_fragments(session)]
 
-def create_index(es):
-    if es.indices.exists('suggestion'):
-        es.indices.delete('suggestion')
+def create_index(es, idx):
+    if es.indices.exists(idx):
+        es.indices.delete(idx)
 
     body = {
         'settings': json.load(file('settings.json')),
         'mappings': json.load(file('mapping.json'))
     }
 
-    es.indices.create(index='suggestion', body=body)
+    es.indices.create(index=idx, body=body)
 
-def index_suggestion_partition(suggestions, hosts, port):
+def index_completion_partition(completions, hosts, port):
     def actions():
-        for phrase, weight in suggestions:
+        for completion in completions:
             yield {
                 '_index': 'suggestion',
                 '_type': 'suggestion',
                 '_op_type': 'index',
                 '_source': {
                     'suggest': {
-                        'input': phrase,
-                        'weight': weight
+                        'input': completion['phrase'],
+                        'weight': completion['weight'],
+                        'payload': {
+                            'top_hits': completion['top_hits']
+                        }
                     }
                 }
             }
@@ -121,7 +124,7 @@ def main(args):
     print 'Connecting to Elasticsearch...'
     es = Elasticsearch([ {'host': host, 'port': args.es_port } for host in args.es_hosts ])
     print '(Re)createing index...'
-    create_index(es)
+    create_index(es, args.index_name)
 
     print 'Executing Spark job...'
     sc = SparkContext()
@@ -130,10 +133,30 @@ def main(args):
 
     successes = searches.filter(lambda s: s['num_results'] > 0)
     suggestions = successes.map(lambda s: (s['phrase'], 1)).reduceByKey(lambda x,y: x+y)
+    
+    top_hits = successes\
+    .map(lambda s: ((s['phrase'], frozenset(s['results'][-1].items())), 1))\
+    .reduceByKey(lambda x,y: x+y)\
+    .map(lambda ((l,r), cnt): (l, [(dict(r), cnt)]))\
+    .reduceByKey(lambda x,y: sorted(x + y, key=lambda (r,c): c)[:5])
+
+    completions = suggestions.join(top_hits)\
+    .map(lambda (phrase, (cnt, hits)): {
+        'phrase': phrase,
+        'weight': cnt,
+        'top_hits': [
+            {
+                'name': '%s.%s' % (hit['package'].replace('/','.'), hit['type']),
+                'link': '/static/javadoc/%s/%s.html' % (hit['package'], hit['type'])
+            }
+            for hit, hit_cnt in hits
+        ]
+    })
+
 
     print 'Sending suggestions to Elasticsearch...'
 
-    suggestions.foreachPartition(partial(index_suggestion_partition, hosts=args.es_hosts, port=args.es_port))
+    completions.foreachPartition(partial(index_completion_partition, hosts=args.es_hosts, port=args.es_port))
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Take click stream data from HDFS and create and populate a ElasticSearch index for autocomplete suggestions.')
@@ -141,6 +164,7 @@ def parse_args():
     parser.add_argument('--schema', '-s', metavar='AVRO_SCHEMA_FILE', type=str, required=True, help='The Avro schema file to use as reading schema for the data.')
     parser.add_argument('--es-hosts', '-e', metavar='HOSTNAME', type=str, nargs="+", help='A list of ElasticSearch hosts to connect to.', default=['localhost'])
     parser.add_argument('--es-port', '-p', metavar='PORT', type=int, help='Port number that ElasticSearch runs on.', default=9200)
+    parser.add_argument('--index-name', '-n', metavar='INDEX_NAME', type=str, help='The name of the ElasticSearch index to use. This index will be deleted if it already exists.', default='suggestion')
 
     return parser.parse_args()
 

@@ -132,9 +132,12 @@ limitations under the License.
           }
         ]).on('typeahead:selected', function(e,suggestion,dataset) {
           if (dataset == 'searches') {
-            $('#search-form').submit()
+            var sf = $('#search-form')
+            var sfa = sf.attr('action')
+            sf.attr('action', sfa + '#suggestion')
+            sf.submit()
           } else if (dataset == 'top_hits') {
-            window.location.href = suggestion.link
+            window.location.href = suggestion.link + '#top_hit'
           }
         })
     </script>

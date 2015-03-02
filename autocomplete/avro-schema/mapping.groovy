@@ -103,5 +103,6 @@ mapping {
     def refererUri = parse referer() to uri
     when refererUri.path().equalTo('/search/') apply {
       map true onto 'isSearchResult'
+      map locationUri.decodedFragment() onto 'resultType'
     }
 }

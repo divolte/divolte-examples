@@ -22,7 +22,6 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
 import java.util.EnumSet;
-import java.util.stream.Stream;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration.Dynamic;
@@ -69,7 +68,7 @@ public class Webapp extends Application<WebappConfiguration>{
     private TransportClient setupElasticSearchClient(final WebappConfiguration configuration) {
         final Settings esSettings = settingsBuilder().put("cluster.name", configuration.esClusterName).build();
         final TransportClient client = new TransportClient(esSettings);
-        Stream.of(configuration.esHosts).forEach((host) ->  client.addTransportAddress(new InetSocketTransportAddress(host, configuration.esPort)));
+        configuration.esHosts.forEach((host) ->  client.addTransportAddress(new InetSocketTransportAddress(host, configuration.esPort)));
         return client;
     }
 

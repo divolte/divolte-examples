@@ -1,6 +1,7 @@
 package io.divolte.exaples.webapp;
 
 import static io.divolte.exaples.webapp.CompletionResource.*;
+import static org.elasticsearch.common.unit.TimeValue.*;
 
 import java.util.stream.StreamSupport;
 
@@ -12,7 +13,7 @@ import org.elasticsearch.common.unit.TimeValue;
 import com.codahale.metrics.health.HealthCheck;
 
 public class CompletionHealthCheck extends HealthCheck {
-    private static final int MAX_ES_RESPONSE_TIME = 300;
+    private static final TimeValue MAX_ES_RESPONSE_TIME = timeValueMillis(300);
     private final Client esClient;
 
     public CompletionHealthCheck(final Client esClient) {
@@ -22,7 +23,7 @@ public class CompletionHealthCheck extends HealthCheck {
     @Override
     protected Result check() throws Exception {
         try {
-            final SuggestResponse response = completionRequest(esClient, "b").get(TimeValue.timeValueMillis(MAX_ES_RESPONSE_TIME));
+            final SuggestResponse response = completionRequest(esClient, "b").get(MAX_ES_RESPONSE_TIME);
 
             final long numResults = StreamSupport
             .stream(response.getSuggest().spliterator(), false)

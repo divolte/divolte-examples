@@ -41,16 +41,17 @@ def complete():
                 }
                 for option in es.suggest(index='suggestion', body=es_query)['suggest'][0]['options']]
 
-    top_hits = [
-        {
-            'value': 'org.apache.commons.lang3.BooleanUtils',
-            'link': 'http://localhost:5000/static/javadoc/org/apache/commons/lang3/BooleanUtils.html'
-        },
-        {
-            'value': 'org.apache.commons.lang3.StringUtils',
-            'link': 'http://localhost:5000/static/javadoc/org/apache/commons/lang3/StringUtils.html'
-        }
-    ]
+    if es.suggest(index='suggestion', body=es_query)['suggest'][0]['options']:
+        top_hits = [
+            {
+                'value': hit['name'],
+                'link': hit['link']
+            }
+            for hit in es.suggest(index='suggestion', body=es_query)['suggest'][0]['options'][0]['payload']['top_hits']
+        ]
+    else:
+        top_hits = []
+    
     return jsonify(searches = searches, top_hits=top_hits)
 
 def es_search(q):
