@@ -57,8 +57,6 @@ Revolver.settings
 
 assemblySettings
 
-net.virtualvoid.sbt.graph.Plugin.graphSettings
-
 // If running locally, ensure that "provided" dependencies are on the classpath.
 run in Compile <<= Defaults.runTask(fullClasspath in Compile, mainClass in (Compile, run), runner in (Compile, run))
 
