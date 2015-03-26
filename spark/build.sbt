@@ -30,7 +30,7 @@ updateOptions := updateOptions.value.withCachedResolution(cachedResoluton = true
 // Enable during development to access local maven artifacts.
 resolvers += Resolver.mavenLocal
 
-val sparkV = "1.1.0"
+val sparkV = "1.3.0"
 
 // Provided: the Spark container supplies its own version.
 libraryDependencies += "org.apache.spark"  %% "spark-core"            % sparkV % Provided
@@ -48,7 +48,10 @@ libraryDependencies += "org.apache.kafka"  %% "kafka"                 % "0.8.1.1
 )
 
 // Necessary to prevent Avro/Hadoop version conflicts.
-libraryDependencies += "org.apache.hadoop" %  "hadoop-client"         % "2.3.0" % Provided
+libraryDependencies += "org.apache.hadoop" %  "hadoop-client"         % "2.2.0" % Provided
+
+// This is annoying, but we have to exclude it.
+excludeDependencies += "org.spark-project.spark" % "unused"
 
 Revolver.settings
 
