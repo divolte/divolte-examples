@@ -21,7 +21,6 @@ import java.util.Date
 import io.divolte.spark.avro._
 import org.apache.avro.generic.IndexedRecord
 import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
 
 /**
  * Divolte Spark Example.
