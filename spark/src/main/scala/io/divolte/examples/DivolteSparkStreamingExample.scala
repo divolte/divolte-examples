@@ -18,7 +18,7 @@ package io.divolte.examples
 
 import java.nio.file.Files
 
-import io.divolte.spark.avro._
+import io.divolte.spark.avro.streaming._
 import kafka.utils.ZkUtils
 import org.apache.avro.generic.GenericRecord
 import org.apache.spark.SparkContext

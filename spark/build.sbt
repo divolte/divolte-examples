@@ -39,7 +39,7 @@ libraryDependencies += "org.apache.spark"  %% "spark-streaming-kafka" % sparkV e
   ExclusionRule(organization = "org.apache.spark", name = "spark-streaming_2.10"),
   ExclusionRule(organization = "javax.jms")
 )
-libraryDependencies += "io.divolte"        %% "divolte-spark"         % "0.1"
+libraryDependencies += "io.divolte"        %% "divolte-spark"         % "0.2-SNAPSHOT"
 libraryDependencies += "org.apache.kafka"  %% "kafka"                 % "0.8.1.1" excludeAll(
   ExclusionRule(organization = "com.sun.jdmk"),
   ExclusionRule(organization = "com.sun.jmx"),
