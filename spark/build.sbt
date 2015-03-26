@@ -17,17 +17,15 @@
 import spray.revolver.RevolverPlugin.Revolver
 
 organization  := "io.divolte"
-
 name          := "spark-example"
-
 version       := "0.2"
 
 scalaVersion  := "2.10.4"
-
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-target:jvm-1.7", "-feature")
 
 // Experimental: improved incremental compilation.
 incOptions    := incOptions.value.withNameHashing(nameHashing = true)
+updateOptions := updateOptions.value.withCachedResolution(cachedResoluton = true)
 
 // Enable during development to access local maven artifacts.
 resolvers += Resolver.mavenLocal
@@ -36,16 +34,12 @@ val sparkV = "1.1.0"
 
 // Provided: the Spark container supplies its own version.
 libraryDependencies += "org.apache.spark"  %% "spark-core"            % sparkV % "provided"
-
 libraryDependencies += "org.apache.spark"  %% "spark-streaming"       % sparkV % "provided"
-
 libraryDependencies += "org.apache.spark"  %% "spark-streaming-kafka" % sparkV excludeAll(
   ExclusionRule(organization = "org.apache.spark", name = "spark-streaming_2.10"),
   ExclusionRule(organization = "javax.jms")
 )
-
 libraryDependencies += "io.divolte"        %% "divolte-spark"         % "0.1"
-
 libraryDependencies += "org.apache.kafka"  %% "kafka"                 % "0.8.1.1" excludeAll(
   ExclusionRule(organization = "com.sun.jdmk"),
   ExclusionRule(organization = "com.sun.jmx"),
