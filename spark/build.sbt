@@ -20,7 +20,7 @@ organization  := "io.divolte"
 name          := "spark-example"
 version       := "0.2"
 
-scalaVersion  := "2.10.4"
+scalaVersion  := "2.10.5"
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-target:jvm-1.7", "-feature")
 
 // Experimental: improved incremental compilation.
