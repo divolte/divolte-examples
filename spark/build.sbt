@@ -33,8 +33,8 @@ resolvers += Resolver.mavenLocal
 val sparkV = "1.1.0"
 
 // Provided: the Spark container supplies its own version.
-libraryDependencies += "org.apache.spark"  %% "spark-core"            % sparkV % "provided"
-libraryDependencies += "org.apache.spark"  %% "spark-streaming"       % sparkV % "provided"
+libraryDependencies += "org.apache.spark"  %% "spark-core"            % sparkV % Provided
+libraryDependencies += "org.apache.spark"  %% "spark-streaming"       % sparkV % Provided
 libraryDependencies += "org.apache.spark"  %% "spark-streaming-kafka" % sparkV excludeAll(
   ExclusionRule(organization = "org.apache.spark", name = "spark-streaming_2.10"),
   ExclusionRule(organization = "javax.jms")
@@ -48,7 +48,7 @@ libraryDependencies += "org.apache.kafka"  %% "kafka"                 % "0.8.1.1
 )
 
 // Necessary to prevent Avro/Hadoop version conflicts.
-libraryDependencies += "org.apache.hadoop" %  "hadoop-client"         % "2.3.0" % "provided"
+libraryDependencies += "org.apache.hadoop" %  "hadoop-client"         % "2.3.0" % Provided
 
 Revolver.settings
 
