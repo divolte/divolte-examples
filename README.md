@@ -54,7 +54,6 @@ Note that if you have a special source encoding you should add
 
 For convenience, the `javadoc-commons-lang-divolte.tar.gz` archive contains
 a pre-built set of Javadoc for the [Apache Commons Lang][9] project.
-project.
 
 **HAVE FUN!**
 
