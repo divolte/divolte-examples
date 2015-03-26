@@ -46,7 +46,7 @@ divolte {
     producer = {
       // Assumes a Kafka server is available locally.
       metadata.broker.list = ["127.0.0.1:9092"]
-      client.id = rfs.rebb.injector
+      client.id = divolte-spark-example
       message.send.max.retries = 100
       retry.backoff.ms = 250
     }
