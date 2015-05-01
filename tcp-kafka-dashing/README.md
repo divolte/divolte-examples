@@ -87,9 +87,8 @@ Edit dashboards/sample.erb, replace the body of the ul-element with the contents
 ```sh
 cd <location-for-your-dashing-dashboard>/divolte_dashboard_project
 dashing start
-```
+
 # Leaving it running and in another terminal do
-```sh
 cd divolte-examples/tcp-kafka-dashing
 python main.py --schema /path/to/divolte-examples/avro-schema/src/main/resources/JavadocEventRecord.avsc 
 ```
